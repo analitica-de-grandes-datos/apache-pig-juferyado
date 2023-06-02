@@ -17,3 +17,11 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+data = LOAD 'data.tsv' AS (col1: chararray, col2: bag{}, col3: map[]);
+
+result = FOREACH data GENERATE FLATTEN(col2) AS letter, FLATTEN(col3) AS key;
+result = GROUP result BY (letter, key);
+result = FOREACH result GENERATE $0 as letter, SIZE($1) AS value;
+
+STORE result INTO 'output' USING PigStorage(',');
+DUMP result;
