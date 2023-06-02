@@ -34,3 +34,26 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+data = LOAD 'data.csv' USING PigStorage(',') AS (id: int, firstname: chararray, lastname: chararray, birthday: chararray, color: chararray, number: int);
+
+result = FOREACH data GENERATE
+    birthday,
+    REPLACE(
+        REPLACE(
+            REPLACE(
+                REPLACE(
+                    LOWER (ToString( ToDate(birthday, 'yyyy-MM-dd'), 'MMM' )),
+                    'apr',
+                    'abr'),
+                'jan',
+                'ene'),
+            'aug',
+            'ago'),
+        'dec',
+        'dic'),
+
+    SUBSTRING(birthday, 5, 7) AS mm,
+    REGEX_EXTRACT(SUBSTRING(birthday, 5, 7), '0*(\\d+)?', 1) as m;
+
+STORE result INTO 'output' USING PigStorage(',');
+DUMP result;

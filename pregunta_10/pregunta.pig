@@ -21,3 +21,10 @@ $ pig -x local -f pregunta.pig
         >>> Escriba su respuesta a partir de este punto <<<
 */
 
+data = LOAD 'data.csv' USING PigStorage(',') AS (id: int, name: chararray, lastname: chararray, date: chararray, color: chararray, number: int);
+
+length = FOREACH data GENERATE lastname, SIZE(lastname) as length;
+result = ORDER length BY length DESC, lastname;
+
+STORE result INTO 'output' USING PigStorage(',');
+DUMP result;
